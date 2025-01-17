@@ -1,9 +1,8 @@
 package com.app.mifi.repository;
 
 import com.app.mifi.persist.entity.User;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
 
 public interface UserRepository extends JpaRepository<User,Long> {
     boolean existsByUsername(String username);
@@ -11,4 +10,8 @@ public interface UserRepository extends JpaRepository<User,Long> {
     User findByUsername(String username);
 
     User findByUsernameAndPassword(String username, String password);
+
+    List<User> findAllByCategoryAndUserIdNot(String category, Long userId);
+
+    List<User> findAllByUserIdNot(Long userId);
 }

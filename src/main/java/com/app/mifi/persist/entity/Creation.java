@@ -15,10 +15,9 @@ import lombok.Data;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-
 import java.util.Base64;
 import java.util.Date;
-
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Entity
@@ -50,6 +49,11 @@ public class Creation {
     @ManyToOne(fetch = FetchType.LAZY,targetEntity = User.class)
     private User user;
 
+    public void setCreatedDate(Date createdDate) {
+        if(isNull(this.createdDate))
+            this.createdDate = new Date();
+    }
+
     public CreationResponse toDtos(){
         CreationResponse creationResponse= CreationResponse.builder().build();
         BeanUtils.copyProperties(this,creationResponse);
@@ -63,6 +67,7 @@ public class Creation {
             String creationPic = Base64.getEncoder().encodeToString(fileBytes);
             creationResponse.setCreationBase64(creationPic);
         }
+        creationResponse.setUser(user.toDto());
         return creationResponse;
     }
 }

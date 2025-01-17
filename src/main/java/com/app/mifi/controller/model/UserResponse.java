@@ -36,4 +36,6 @@ public class UserResponse {
     private Long userId;
 
     private String profilePicBase64;
+
+    private String token;
 }

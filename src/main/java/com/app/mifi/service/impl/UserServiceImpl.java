@@ -1,5 +1,6 @@
 package com.app.mifi.service.impl;
 
+import com.app.mifi.utils.JwtUtil;
 import com.app.mifi.controller.model.LoginRequest;
 import com.app.mifi.controller.model.UserRequest;
 import com.app.mifi.controller.model.UserResponse;
@@ -11,6 +12,7 @@ import com.app.mifi.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -23,12 +25,15 @@ import static java.util.Objects.nonNull;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder=new BCryptPasswordEncoder();
 
     @Override
     public UserResponse saveUser(UserRequest userRequest) {
         validateUserRequest(userRequest);
         User user = new User();
         BeanUtils.copyProperties(userRequest,user);
+        user.setPassword(bCryptPasswordEncoder.encode(userRequest.getPassword()));
         return userRepository.save(user).toDto();
     }
 
@@ -66,13 +71,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse loginUser(LoginRequest loginRequest) {
-        User byUsername = userRepository.findByUsername(loginRequest.getUsername());
-        if(nonNull(byUsername)) {
-            User user = userRepository.findByUsernameAndPassword(loginRequest.getUsername(), loginRequest.getPassword());
-            if (nonNull(user)) {
-                return user.toDto();
-            } else {
-                throw new MiFiException("BAD REQUEST", "Username does not Match with Password", HttpStatus.BAD_REQUEST);
+        User user = userRepository.findByUsername(loginRequest.getUsername());
+        if(nonNull(user)) {
+            if (bCryptPasswordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+                String token = jwtUtil.generateToken(user.getUsername());
+                UserResponse userResponse= user.toDto();
+                userResponse.setToken(token);
+                return userResponse;
+            }
+            else {
+                throw new MiFiException("Validation","Invalid credentials", HttpStatus.UNAUTHORIZED);
             }
         }
         else{

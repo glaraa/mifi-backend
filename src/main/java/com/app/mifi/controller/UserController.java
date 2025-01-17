@@ -18,14 +18,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import static com.app.mifi.constant.Constant.REQUEST_BY;
 
 @RestController
 @RequestMapping("/api/users")
@@ -35,8 +33,8 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping(value = "/")
-    public ResponseEntity<MiFiResponse<UserResponse>> createUser(@RequestHeader(name = "RequestBy") Requesters requestBy, @RequestBody UserRequest user) {
+    @PostMapping(value = "/register")
+    public ResponseEntity<MiFiResponse<UserResponse>> createUser(@RequestHeader(name =  REQUEST_BY) Requesters requestBy, @RequestBody UserRequest user) {
             UserResponse savedUser = userService.saveUser(user);
             return new ResponseEntity<>(MiFiResponse.<UserResponse>builder().response(savedUser).build(), HttpStatus.CREATED);
     }
@@ -48,26 +46,26 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<MiFiResponse<UserResponse>> getUserById(@RequestHeader(name = "RequestBy") Requesters requestBy, @PathVariable Long userId) {
+    public ResponseEntity<MiFiResponse<UserResponse>> getUserById(@RequestHeader(name =  REQUEST_BY) Requesters requestBy, @PathVariable Long userId) {
         log.info("Fetching user info for user [{}]  requester [{}]",userId,requestBy);
         UserResponse user = userService.getUserInfo(userId);
         return new ResponseEntity<>(MiFiResponse.<UserResponse>builder().response(user).build(), HttpStatus.OK);
     }
     @PutMapping("/{userId}")
-    public ResponseEntity<UserResponse> updateUserById(@RequestHeader(name = "RequestBy") Requesters requestBy, @PathVariable Long userId,@RequestBody UserRequest userRequest) {
+    public ResponseEntity<UserResponse> updateUserById(@RequestHeader(name =  REQUEST_BY) Requesters requestBy, @PathVariable Long userId,@RequestBody UserRequest userRequest) {
         log.info("Updating user info for user [{}]  requester [{}]",userId,requestBy);
         UserResponse createdUser = userService.updateUserInfo(userId,userRequest);
         return new ResponseEntity<>(createdUser, HttpStatus.OK);
     }
 
     @GetMapping("/unique/{username}")
-    public ResponseEntity<MiFiResponse<Boolean>> checkIfUserIsUnique(@RequestHeader(name = "RequestBy") Requesters requestBy, @PathVariable String username) {
+    public ResponseEntity<MiFiResponse<Boolean>> checkIfUserIsUnique(@RequestHeader(name =  REQUEST_BY) Requesters requestBy, @PathVariable String username) {
         log.info("checking user unique [{}] for requester [{}]",username,requestBy);
         boolean userExists = userService.checkUserExists(username);
         return new ResponseEntity<>(MiFiResponse.<Boolean>builder().response(!userExists).build(), HttpStatus.OK);
     }
     @PostMapping(value = "/profile-pic/{userId}",consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<MiFiResponse<UserResponse>> uploadProfilePicture(@RequestHeader(name = "RequestBy") String requestBy,
+    public ResponseEntity<MiFiResponse<UserResponse>> uploadProfilePicture(@RequestHeader(name =  REQUEST_BY) String requestBy,
                            @PathVariable Long userId, @RequestPart("picture") MultipartFile picture) throws IOException {
         log.info("Uploading profile pic for user [{}]  requester [{}]",userId,requestBy);
         UserResponse user= userService.uploadProfilePicture(userId,picture);

@@ -12,5 +12,5 @@ public class CreationResponse {
     private String creationBase64;
     private Date createdDate;
     private Date updatedDate;
-    private Long userId;
+    private UserResponse user;
 }
