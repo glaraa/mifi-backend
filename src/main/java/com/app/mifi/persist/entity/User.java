@@ -15,12 +15,10 @@ import lombok.Data;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-
 import java.io.Serializable;
-import java.time.DateTimeException;
 import java.util.Base64;
 import java.util.Date;
-
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Entity
@@ -70,6 +68,11 @@ public class User implements Serializable {
     @Column(name = "updated_at",nullable = false)
     private Date updatedAt;
 
+    public void setCreatedAt(Date createdAt) {
+        if(isNull(this.createdAt))
+            this.createdAt = new Date();
+    }
+
     public UserResponse toDto(){
         UserResponse userResponse= UserResponse.builder().build();
         BeanUtils.copyProperties(this,userResponse);
@@ -78,6 +81,11 @@ public class User implements Serializable {
             String profilePic = Base64.getEncoder().encodeToString(fileBytes);
             userResponse.setProfilePicBase64(profilePic);
         }
+        return userResponse;
+    }
+    public UserResponse toDtos(){
+        UserResponse userResponse= UserResponse.builder().build();
+        BeanUtils.copyProperties(this,userResponse);
         return userResponse;
     }
 }

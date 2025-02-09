@@ -16,9 +16,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Date;
-
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Entity
@@ -38,13 +40,11 @@ public class Creation {
     @Column(name = "creation")
     private byte[] creation;
 
-    @CreatedDate
     @Column(name = "created_date")
-    private Date createdDate;
+    private LocalDate createdDate;
 
-    @LastModifiedDate
     @Column(name = "updated_date")
-    private Date updatedDate;
+    private LocalDate updatedDate;
 
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY,targetEntity = User.class)
@@ -62,6 +62,14 @@ public class Creation {
             byte[] fileBytes = this.getCreation();
             String creationPic = Base64.getEncoder().encodeToString(fileBytes);
             creationResponse.setCreationBase64(creationPic);
+        }
+        creationResponse.setUser(user.toDto());
+        //remove null check
+        if (nonNull(createdDate)) {
+            creationResponse.setCreatedDate(createdDate.format(DateTimeFormatter.ISO_DATE));
+        }
+        if(nonNull(updatedDate)) {
+            creationResponse.setUpdatedDate(updatedDate.format(DateTimeFormatter.ISO_DATE));
         }
         return creationResponse;
     }

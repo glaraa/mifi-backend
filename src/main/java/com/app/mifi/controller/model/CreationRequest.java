@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartRequest;
 @Data
 @Builder
 public class CreationRequest {
-    @NotBlank
     private String caption;
     @NotNull
     private Long userId;
