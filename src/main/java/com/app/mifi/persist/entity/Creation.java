@@ -15,6 +15,9 @@ import lombok.Data;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Date;
 import static java.util.Objects.isNull;
@@ -37,22 +40,15 @@ public class Creation {
     @Column(name = "creation")
     private byte[] creation;
 
-    @CreatedDate
     @Column(name = "created_date")
-    private Date createdDate;
+    private LocalDate createdDate;
 
-    @LastModifiedDate
     @Column(name = "updated_date")
-    private Date updatedDate;
+    private LocalDate updatedDate;
 
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY,targetEntity = User.class)
     private User user;
-
-    public void setCreatedDate(Date createdDate) {
-        if(isNull(this.createdDate))
-            this.createdDate = new Date();
-    }
 
     public CreationResponse toDtos(){
         CreationResponse creationResponse= CreationResponse.builder().build();
@@ -68,6 +64,13 @@ public class Creation {
             creationResponse.setCreationBase64(creationPic);
         }
         creationResponse.setUser(user.toDto());
+        //remove null check
+        if (nonNull(createdDate)) {
+            creationResponse.setCreatedDate(createdDate.format(DateTimeFormatter.ISO_DATE));
+        }
+        if(nonNull(updatedDate)) {
+            creationResponse.setUpdatedDate(updatedDate.format(DateTimeFormatter.ISO_DATE));
+        }
         return creationResponse;
     }
 }

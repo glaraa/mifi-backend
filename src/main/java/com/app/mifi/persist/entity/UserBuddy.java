@@ -1,5 +1,6 @@
 package com.app.mifi.persist.entity;
 
+import com.app.mifi.controller.model.UserBuddyResponse;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import org.springframework.beans.BeanUtils;
+
 import java.util.Date;
 
 @Entity
@@ -32,4 +35,11 @@ public class UserBuddy {
 
     @Column(name = "buddy_since")
     private Date buddySince;
+
+    public UserBuddyResponse toDto(){
+        UserBuddyResponse userBuddyResponse= UserBuddyResponse.builder().build();
+        BeanUtils.copyProperties(this, userBuddyResponse);
+        userBuddyResponse.setBuddyUser(this.buddyUser.toDtos());
+        return userBuddyResponse;
+    }
 }

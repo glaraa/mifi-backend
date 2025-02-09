@@ -32,7 +32,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .cors(cors-> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/api/login","/api/users/register","/unique/*").permitAll()
+                        .requestMatchers("/api/login","/api/users/register","/api/users/unique/*","/api/forgot-password","/api/validate-otp","/api/reset-password").permitAll()
                         .anyRequest().authenticated()
                 )
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

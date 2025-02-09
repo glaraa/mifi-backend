@@ -89,28 +89,30 @@ public class BuddyServiceImpl implements BuddyService {
                         .build();
                 finalSuggestions.add(response);
             });
-        }
-        List<User> users= userRepository.findAllByUserIdNot(userId);
-        users.forEach(u->{
-            MutualBuddyResponse response = MutualBuddyResponse.builder()
-                    .mutualCount(0)
-                    .suggestedUser(u.toDtos())
-                    .suggestionType(SuggestionType.RANDOM)
-                    .build();
-            finalSuggestions.add(response);
+            List<User> users= userRepository.findAllByUserIdNot(userId);
+            users.forEach(u->{
+                if (mutualBuddies.containsKey(u)) {
+                    return;
+                }
+                MutualBuddyResponse response = MutualBuddyResponse.builder()
+                        .mutualCount(0)
+                        .suggestedUser(u.toDtos())
+                        .suggestionType(SuggestionType.RANDOM)
+                        .build();
+                finalSuggestions.add(response);
 
-        });
-        Set<MutualBuddyResponse> toRemove = new HashSet<>();
-        for(MutualBuddyResponse suggestion:finalSuggestions){
-           if(userBuddyRepository.existsByUser_UserIdAndBuddyUser_UserId(userId,suggestion.getSuggestedUser().getUserId())){
-               toRemove.add(suggestion);
-           }
-           else if(buddyRequestRepository.existsByRequesterUser_UserIdAndRecipientUser_UserId(userId,suggestion.getSuggestedUser().getUserId())){
-               toRemove.add(suggestion);
-
-           }
+            });
+            Set<MutualBuddyResponse> toRemove = new HashSet<>();
+            for(MutualBuddyResponse suggestion:finalSuggestions){
+                if(userBuddyRepository.existsByUser_UserIdAndBuddyUser_UserId(userId,suggestion.getSuggestedUser().getUserId())){
+                    toRemove.add(suggestion);
+                }
+                else if(buddyRequestRepository.existsByRequesterUser_UserIdAndRecipientUser_UserId(userId,suggestion.getSuggestedUser().getUserId())){
+                    toRemove.add(suggestion);
+                }
+            }
+            finalSuggestions.removeAll(toRemove);
         }
-        finalSuggestions.removeAll(toRemove);
         return new ArrayList<>(finalSuggestions);
     }
 
@@ -122,7 +124,7 @@ public class BuddyServiceImpl implements BuddyService {
         Date dateNow=new Date();
         saveUserBuddy(userId, requesterUserId,dateNow);
         saveUserBuddy(requesterUserId,userId, dateNow);
-        return UserBuddyResponse.builder().buddyUserId(requesterUserId)
+        return UserBuddyResponse.builder().buddyUser(userRepository.findById(requesterUserId).orElse(new User()).toDtos())
                 .userId(userId).buddySince(dateNow).build();
     }
 
@@ -135,7 +137,7 @@ public class BuddyServiceImpl implements BuddyService {
             return UserRelationship.PENDING;
         }
         else if(buddyRequestRepository.existsByRequesterUser_UserIdAndRecipientUser_UserId(viewUserId,userId)){
-            return UserRelationship.ADD;
+            return UserRelationship.RESPOND;
         }
         else{
             return UserRelationship.ADD;
@@ -154,6 +156,15 @@ public class BuddyServiceImpl implements BuddyService {
     public Boolean rejectBuddyRequest(Long requestId) {
         buddyRequestRepository.deleteById(requestId);
         return true;
+    }
+
+    @Override
+    public List<UserBuddyResponse> getAllUserBuddies(Long userId) {
+        List<UserBuddyResponse> userBuddies = new ArrayList<>();
+        userBuddyRepository.findAllByUser_UserId(userId).forEach(buddy->{
+            userBuddies.add(buddy.toDto());
+        });
+        return userBuddies;
     }
 
     private void removeBuddy(Long userId, Long buddyUserId) {

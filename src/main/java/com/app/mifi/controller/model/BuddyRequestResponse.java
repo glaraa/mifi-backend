@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @Builder
 public class BuddyRequestResponse {
-    private Integer requestId;
+    private Long requestId;
     private UserResponse recipientUser;
     private UserResponse requesterUser;
     private Boolean hasSeen;

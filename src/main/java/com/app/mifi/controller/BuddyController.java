@@ -75,6 +75,14 @@ public class BuddyController {
         return ResponseEntity.status(200).body(MiFiResponse.<UserRelationship>builder().response(response).build());
     }
 
+    @GetMapping("{userId}/user-buddies")
+    public ResponseEntity<MiFiResponse<List<UserBuddyResponse>>> getAllUserBuddies(@RequestHeader(name = REQUEST_BY) String requestBy,
+                                                                                     @PathVariable Long userId) {
+        log.info("Fetch buddies for user [{}], requestedBy [{}]",userId,requestBy);
+        List<UserBuddyResponse> response = buddyService.getAllUserBuddies(userId);
+        return ResponseEntity.status(200).body(MiFiResponse.<List<UserBuddyResponse>>builder().response(response).build());
+    }
+
     @DeleteMapping("{userId}/remove-buddy/{buddyUserId}")
     public ResponseEntity<MiFiResponse<Boolean>> removeUserBuddy(@RequestHeader(name = REQUEST_BY) String requestBy,
                                                                            @PathVariable Long userId, @PathVariable Long buddyUserId) {

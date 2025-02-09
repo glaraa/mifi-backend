@@ -12,4 +12,10 @@ public interface CreationService {
     List<CreationResponse> fetchAllCreations(Long userId);
 
     CreationResponse fetchCreationById(Long creationId);
+
+    List<CreationResponse> fetchAllFeedCreations(Long userId);
+
+    Boolean deleteCreationById(Long userId, Long creationId);
+
+    CreationResponse updateCreationById(Long userId, Long creationId, String caption);
 }

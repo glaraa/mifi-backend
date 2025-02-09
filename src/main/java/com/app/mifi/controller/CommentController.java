@@ -4,6 +4,7 @@ import com.app.mifi.controller.model.CommentRequest;
 import com.app.mifi.controller.model.CommentResponse;
 import com.app.mifi.response.MiFiResponse;
 import com.app.mifi.service.CommentService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,12 +21,12 @@ import java.util.List;
 import static com.app.mifi.constant.Constant.REQUEST_BY;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/users")
 @Slf4j
 public class CommentController {
 
-    @Autowired
-    private CommentService commentService;
+    private final CommentService commentService;
 
     @PostMapping("/comment")
     public ResponseEntity<MiFiResponse<CommentResponse>> createComment(@RequestHeader(name = REQUEST_BY) String requestBy, @RequestBody CommentRequest commentRequest) {

@@ -1,6 +1,7 @@
 package com.app.mifi.controller;
 
 
+import com.app.mifi.controller.model.FeedbackRequest;
 import com.app.mifi.controller.model.Requesters;
 import com.app.mifi.controller.model.UserRequest;
 import com.app.mifi.controller.model.UserResponse;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -70,5 +73,15 @@ public class UserController {
         log.info("Uploading profile pic for user [{}]  requester [{}]",userId,requestBy);
         UserResponse user= userService.uploadProfilePicture(userId,picture);
         return ResponseEntity.status(HttpStatus.OK).body(MiFiResponse.<UserResponse>builder().response(user).build());
+    }
+
+    @PostMapping(value = "/{userId}/delete-account")
+    public ResponseEntity<MiFiResponse<Boolean>> deleteUserAccount(@RequestHeader(name =  REQUEST_BY) String requestBy,
+                                                                   @PathVariable Long userId,
+                                                                   @RequestParam String password,
+                                                                   @RequestBody FeedbackRequest feedbackRequest) {
+        log.info("Deleting account for user [{}]  requester [{}]",userId,requestBy);
+        userService.deleteUserAccount(userId,password,feedbackRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(MiFiResponse.<Boolean>builder().response(true).build());
     }
 }

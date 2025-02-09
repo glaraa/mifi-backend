@@ -53,7 +53,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentResponse> getAllComments(Long creationId) {
         List<CommentResponse> commentResponses= new ArrayList<>();
-        commentRepository.findAllByCreationId(creationId).forEach(comment -> {
+        commentRepository.findAllByCreationIdOrderByCommentIdDesc(creationId).forEach(comment -> {
             commentResponses.add(comment.toDto());
         });
         return commentResponses;

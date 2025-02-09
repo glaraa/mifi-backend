@@ -38,4 +38,8 @@ public class UserResponse {
     private String profilePicBase64;
 
     private String token;
+
+    private int creationsCount;
+    private int buddiesCount;
+    private int buddyRequestsCount;
 }

@@ -1,5 +1,6 @@
 package com.app.mifi.service;
 
+import com.app.mifi.controller.model.FeedbackRequest;
 import com.app.mifi.controller.model.LoginRequest;
 import com.app.mifi.controller.model.UserRequest;
 import com.app.mifi.controller.model.UserResponse;
@@ -23,4 +24,12 @@ public interface UserService {
     boolean checkUserExists(String username);
 
     UserResponse uploadProfilePicture(Long userId, MultipartFile picture) throws IOException;
+
+    UserResponse fetchUserByUserEmail(String email);
+
+    boolean resetUserPassword(String email, String password);
+
+    void deleteUserAccount(Long userId, String password, FeedbackRequest feedbackRequest);
+
+    boolean updateUserPassword(Long userId, String oldPassword, String newPassword);
 }

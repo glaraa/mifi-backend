@@ -20,4 +20,6 @@ public interface BuddyService {
     Boolean removeUserBuddy(Long userId, Long buddyUserId);
 
     Boolean rejectBuddyRequest(Long requestId);
+
+    List<UserBuddyResponse> getAllUserBuddies(Long userId);
 }

@@ -1,5 +1,6 @@
 package com.app.mifi.repository;
 
+import com.app.mifi.persist.entity.User;
 import com.app.mifi.persist.entity.UserBuddy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
@@ -10,4 +11,10 @@ public interface UserBuddyRepository extends JpaRepository<UserBuddy, Integer> {
     Boolean existsByUser_UserIdAndBuddyUser_UserId(Long userId, Long viewUserId);
 
     UserBuddy findByUser_UserIdAndBuddyUser_UserId(Long userId, Long buddyUserId);
+
+    int countByUser_UserId(Long userId);
+
+    Integer deleteAllByUser(User user);
+
+    Integer deleteAllByBuddyUser(User user);
 }
